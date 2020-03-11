@@ -15,8 +15,10 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import wostal.call.of.code.abstracts.AbstractDao;
+import wostal.call.of.code.dto.UserWithoutPassword;
 import wostal.call.of.code.entity.User;
 import wostal.call.of.code.rowmapper.UserRowMapper;
+import wostal.call.of.code.rowmapper.UserWithoutPasswordRowMapper;
 
 @Repository
 public class UserDaoImpl implements AbstractDao<User> {
@@ -63,17 +65,17 @@ public class UserDaoImpl implements AbstractDao<User> {
 		return list;
 	}
 	
-	public List<User> getConversationUsers(Long idConversation) {
+	public List<UserWithoutPassword> getConversationUsers(Long idConversation) {
 		SqlParameterSource params = new MapSqlParameterSource("idConversation", idConversation);
-		String sqlQuery = "SELECT u.* FROM user u join conversation_user cu on (cu.id_conversation=:idConversation and cu.id_user=u.id)";
-		List<User> list = namedParamJdbcTemplate.query(sqlQuery,params, new UserRowMapper());
+		String sqlQuery = "SELECT u.id, u.nick FROM user u join conversation_user cu on (cu.id_conversation=:idConversation and cu.id_user=u.id)";
+		List<UserWithoutPassword> list = namedParamJdbcTemplate.query(sqlQuery,params, new UserWithoutPasswordRowMapper());
 		return list;
 	}
 	
-	public List<User> getContacts(User user) {
+	public List<UserWithoutPassword> getContacts(User user) {
 		SqlParameterSource beanParams = new BeanPropertySqlParameterSource(user);
-		String sqlQuery = "SELECT * FROM user where id != :id";
-		List<User> list = namedParamJdbcTemplate.query(sqlQuery, beanParams, new UserRowMapper());
+		String sqlQuery = "SELECT id, nick FROM user where id != :id";
+		List<UserWithoutPassword> list = namedParamJdbcTemplate.query(sqlQuery, beanParams, new UserWithoutPasswordRowMapper());
 		return list;
 	}
 
@@ -88,5 +90,4 @@ public class UserDaoImpl implements AbstractDao<User> {
 		String sqlQuery = "UPDATE user SET password=:password, nick=:nick WHERE id = :id";
 		return namedParamJdbcTemplate.update(sqlQuery, beanParams) == 1;
 	}
-
 }

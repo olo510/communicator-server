@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import wostal.call.of.code.dto.ConversationDto;
+import wostal.call.of.code.dto.UserWithoutPassword;
 import wostal.call.of.code.entity.Conversation;
 import wostal.call.of.code.entity.User;
 import wostal.call.of.code.service.ConversationService;
@@ -73,9 +74,9 @@ public class PanelController {
 			return "error";
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		User user = ((MyUserPrincipal) authentication.getPrincipal()).getUser();
-		List<User> users = userService.getConversationUsers(conversation.getId());
+		List<UserWithoutPassword> users = userService.getConversationUsers(conversation.getId());
 		boolean found = false;
-		for (User u : users) {
+		for (UserWithoutPassword u : users) {
 			if (user.getId() == u.getId()) {
 				found = true;
 				break;

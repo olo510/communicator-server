@@ -14,6 +14,7 @@ import wostal.call.of.code.dao.ConversationDaoImpl;
 import wostal.call.of.code.dao.MessageDaoImpl;
 import wostal.call.of.code.dao.UserDaoImpl;
 import wostal.call.of.code.dto.ConversationDto;
+import wostal.call.of.code.dto.UserWithoutPassword;
 import wostal.call.of.code.entity.Conversation;
 import wostal.call.of.code.entity.User;
 
@@ -122,7 +123,7 @@ public class ConversationService extends AbstractService<Conversation, Conversat
 	@Transactional
 	public void deleteUserFromConversation(Conversation conversation, User user) {
 		dao.deleteUserFromConversation(conversation, user.getId());
-		List<User> users = userDao.getConversationUsers(conversation.getId());
+		List<UserWithoutPassword> users = userDao.getConversationUsers(conversation.getId());
 		if(users.size()<3) {
 			messageDao.delete(conversation);
 			dao.delete(conversation);

@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import wostal.call.of.code.dto.UserWithoutPassword;
 import wostal.call.of.code.entity.Conversation;
 import wostal.call.of.code.entity.User;
 import wostal.call.of.code.service.ConversationService;
@@ -58,9 +59,9 @@ public class FileUploadController {
 			if(conversation!=null) {
 				Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 				User user = ((MyUserPrincipal) authentication.getPrincipal()).getUser();
-				List<User> users = userService.getConversationUsers(conversation.getId());
+				List<UserWithoutPassword> users = userService.getConversationUsers(conversation.getId());
 				boolean found = false;
-				for(User u : users) {
+				for(UserWithoutPassword u : users) {
 					if(user.getId()==u.getId()) {
 						found =true;
 						break;
@@ -97,9 +98,9 @@ public class FileUploadController {
 		if(conversation!=null) {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User user = ((MyUserPrincipal) authentication.getPrincipal()).getUser();
-			List<User> users = userService.getConversationUsers(conversation.getId());
+			List<UserWithoutPassword> users = userService.getConversationUsers(conversation.getId());
 			boolean found = false;
-			for(User u : users) {
+			for(UserWithoutPassword u : users) {
 				if(user.getId()==u.getId()) {
 					found =true;
 					break;

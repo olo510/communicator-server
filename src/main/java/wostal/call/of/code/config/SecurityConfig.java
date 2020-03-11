@@ -14,27 +14,31 @@ import wostal.call.of.code.service.MyUserDetailsService;
 @Configuration
 @EnableWebSecurity
 @ComponentScan("wostal.call.of.code")
-public class SecurityConfig extends WebSecurityConfigurerAdapter{
-	
-	 
-	 @Autowired
-	 MyUserDetailsService myUserDetailsService;
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	  @Override
-	  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-          auth.userDetailsService(myUserDetailsService).passwordEncoder(new BCryptPasswordEncoder());  
-	  }
+	@Autowired
+	MyUserDetailsService myUserDetailsService;
 
-	  @Override
-	  protected void configure(HttpSecurity http) throws Exception {
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(myUserDetailsService).passwordEncoder(new BCryptPasswordEncoder());
+	}
 
-	    http.authorizeRequests()
-	    .antMatchers("/resources/**").permitAll()
-	    .antMatchers("/login", "/error", "/logout").permitAll()
-	    .anyRequest().hasAnyRole("ADMIN", "USER")
-	    .and()
-	    .formLogin().loginPage("/login").defaultSuccessUrl("/panel/main");
-	  }
-    
-    
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+
+//	    http.authorizeRequests()
+//	    .antMatchers("/resources/**").permitAll()
+//	    .antMatchers("/login", "/error", "/logout").permitAll()
+//	    .anyRequest().hasAnyRole("ADMIN", "USER")
+//	    .and()
+//	    .formLogin().loginPage("/login").defaultSuccessUrl("/panel/main");
+
+		http.httpBasic().and().authorizeRequests()
+		.antMatchers("/authorize").permitAll()
+		.anyRequest().hasAnyRole("ADMIN", "USER")
+		.and().csrf().disable()
+		.formLogin().disable();
+	}
+
 }

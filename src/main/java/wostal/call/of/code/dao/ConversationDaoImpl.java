@@ -66,7 +66,7 @@ public class ConversationDaoImpl implements AbstractDao<Conversation> {
 	
 	public List<Conversation> getUserConferences(User user) {
 		SqlParameterSource beanParams = new BeanPropertySqlParameterSource(user);
-		String sqlQuery = "SELECT c.* FROM conversation c join conversation_user cu on (cu.id_conversation=c.id AND cu.id_user=:id) where 2<(select count(wcu.id) from conversation_user wcu where c.id=wcu.id_conversation)";
+		String sqlQuery = "SELECT c.* FROM conversation c join conversation_user cu on (cu.id_conversation=c.id AND cu.id_user=:id) where c.is_conference=1";
 		List<Conversation> list = namedParamJdbcTemplate.query(sqlQuery, beanParams, new ConversationRowMapper());
 		return list;
 	}

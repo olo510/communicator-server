@@ -13,7 +13,8 @@ DROP TABLE IF EXISTS message;
 CREATE TABLE `conversation` (
   `id` int(11) NOT NULL,
   `uuid` varchar(100) NOT NULL,
-  `name` varchar(30) DEFAULT NULL
+  `name` varchar(30) DEFAULT NULL,
+  `is_conference` TINYINT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -114,6 +115,10 @@ INSERT INTO `user` (`id`, `nick`, `password`) VALUES
 --
 ALTER TABLE `conversation`
   ADD PRIMARY KEY (`id`);
+  
+  CREATE INDEX `conversation_index_1` ON `conversation` (`uuid`);
+
+CREATE INDEX `conversation_index_2` ON `conversation` (`is_conference`);
 
 --
 -- Indeksy dla tabeli `conversation_user`

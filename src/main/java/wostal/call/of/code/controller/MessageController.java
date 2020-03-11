@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import wostal.call.of.code.dto.UserWithoutPassword;
 import wostal.call.of.code.entity.Conversation;
 import wostal.call.of.code.entity.Message;
 import wostal.call.of.code.entity.User;
@@ -54,8 +55,8 @@ public class MessageController {
 		message.setIdConversation(conversation.getId());
 		message.setNick(user.getNick());
 		messageService.create(message);
-		List<User> users = userService.getConversationUsers(conversation.getUuid());
-		for(User u : users) {
+		List<UserWithoutPassword> users = userService.getConversationUsers(conversation.getUuid());
+		for(UserWithoutPassword u : users) {
 			this.template.convertAndSend("/message/receiv/" + u.getId(), message);
 		}
 		this.template.convertAndSend("/message/receiv/" + conversation.getUuid(), message);
@@ -68,9 +69,9 @@ public class MessageController {
 		if(conversation==null) return "error";
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		User user = ((MyUserPrincipal) authentication.getPrincipal()).getUser();
-		List<User> users = userService.getConversationUsers(conversation.getId());
+		List<UserWithoutPassword> users = userService.getConversationUsers(conversation.getId());
 		boolean found = false;
-		for(User u : users) {
+		for(UserWithoutPassword u : users) {
 			if(user.getId()==u.getId()) {
 				found =true;
 				break;
@@ -94,9 +95,9 @@ public class MessageController {
 		if(conversation==null) return "error";
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		User user = ((MyUserPrincipal) authentication.getPrincipal()).getUser();
-		List<User> users = userService.getConversationUsers(conversation.getId());
+		List<UserWithoutPassword> users = userService.getConversationUsers(conversation.getId());
 		boolean found = false;
-		for(User u : users) {
+		for(UserWithoutPassword u : users) {
 			if(user.getId()==u.getId()) {
 				found =true;
 				break;
