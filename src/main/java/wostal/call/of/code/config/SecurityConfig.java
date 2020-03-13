@@ -35,7 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //	    .formLogin().loginPage("/login").defaultSuccessUrl("/panel/main");
 
 		http.httpBasic().and().authorizeRequests()
-		.antMatchers("/authorize").permitAll()
+		.antMatchers("/authorize", "/websocket/**", "/app/**", "/message/**").permitAll()
 		.anyRequest().hasAnyRole("ADMIN", "USER")
 		.and().csrf().disable()
 		.formLogin().disable();

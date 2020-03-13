@@ -33,14 +33,14 @@ public class ConversationDaoImpl implements AbstractDao<Conversation> {
 	public Long create(Conversation o) {
 		SqlParameterSource beanParams = new BeanPropertySqlParameterSource(o);
 		final KeyHolder holder = new GeneratedKeyHolder();
-		String sqlQuery = "INSERT INTO conversation (name, id, uuid) VALUES(:name, :id, :uuid)";
+		String sqlQuery = "INSERT INTO conversation (name, id, uuid, is_conference) VALUES(:name, :id, :uuid, :asConference)";
 		namedParamJdbcTemplate.update(sqlQuery, beanParams, holder, new String[] { "id" });
 		return holder.getKey().longValue();
 	}
 
 	public Conversation get(Long id) {
 		SqlParameterSource params = new MapSqlParameterSource("ID", id);
-		String sqlQuery = "SELECT name, id, uuid FROM conversation WHERE id = :ID";
+		String sqlQuery = "SELECT name, id, uuid, is_conference FROM conversation WHERE id = :ID";
 		try {
 			return namedParamJdbcTemplate.queryForObject(sqlQuery, params, new ConversationRowMapper());
 		} catch (EmptyResultDataAccessException e) {
@@ -50,7 +50,7 @@ public class ConversationDaoImpl implements AbstractDao<Conversation> {
 	
 	public Conversation get(String hash) {
 		SqlParameterSource params = new MapSqlParameterSource("hash", hash);
-		String sqlQuery = "SELECT name, id, uuid FROM conversation WHERE uuid = :hash";
+		String sqlQuery = "SELECT name, id, uuid, is_conference FROM conversation WHERE uuid = :hash";
 		try {
 			return namedParamJdbcTemplate.queryForObject(sqlQuery, params, new ConversationRowMapper());
 		} catch (EmptyResultDataAccessException e) {
@@ -81,7 +81,7 @@ public class ConversationDaoImpl implements AbstractDao<Conversation> {
 
 	public boolean update(Conversation o) {
 		SqlParameterSource beanParams = new BeanPropertySqlParameterSource(o);
-		String sqlQuery = "UPDATE conversation SET name=:name, id=:id, uuid=:uuid WHERE id = :id";
+		String sqlQuery = "UPDATE conversation SET name=:name, id=:id, uuid=:uuid, is_conference=:asConference WHERE id = :id";
 		return namedParamJdbcTemplate.update(sqlQuery, beanParams) == 1;
 	}
 	

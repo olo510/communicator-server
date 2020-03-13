@@ -4,6 +4,7 @@ public class Conversation {
 	private String name;
 	private Long id;
 	private String uuid;
+	private boolean asConference;
 
 	public void setName(String name) {
 		this.name = name;
@@ -28,4 +29,13 @@ public class Conversation {
 	public String getUuid() {
 		return this.uuid;
 	}
+
+	public boolean isAsConference() {
+		return asConference;
+	}
+
+	public void setAsConference(boolean asConference) {
+		this.asConference = asConference;
+	}
+
 }

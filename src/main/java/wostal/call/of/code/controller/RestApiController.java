@@ -42,18 +42,23 @@ public class RestApiController {
 	private MessageService messageService;
 	
 	
-	@PostMapping(value = { "/authorize" }, produces = "text/plain;charset=UTF-8")
-	public String authotize(@RequestBody AuthorizeDto authorizeDto, HttpServletResponse response) {
+	@PostMapping(value = { "/authorize" })
+	public Response authotize(@RequestBody AuthorizeDto authorizeDto) {
+		Response response = new Response();
 		try {
-			if(userService.userExist(authorizeDto.nick, authorizeDto.password)) {
-				return "ok";				
+			User user = userService.userExist(authorizeDto.nick, authorizeDto.password);
+			if(user!=null) {
+				response.body = user;
+				response.code=200;
+				response.message="ok";				
 			}else {
-				throw new AbstractException("U¿ytkownik nie istnieje");
+				throw new AbstractException("User not exist");
 			}
 		}catch(Exception e) {
-			response.setStatus(500);
-			return ExceptionHandler.handle(e);
+			response.code=500;
+			response.message = ExceptionHandler.handle(e);
 		}
+		return response;
 	}
 
 	@GetMapping("/contacts")
@@ -89,35 +94,45 @@ public class RestApiController {
 	}
 	
 	@PostMapping(value = { "/conferences/users/remove" }, produces = "text/plain;charset=UTF-8")
-	public String removeUserFromConversation(@RequestBody String uuidConversation, HttpServletResponse response) {
+	public Response removeUserFromConversation(@RequestBody String uuidConversation, HttpServletResponse r) {
+		Response response = new Response();
 		try {
 			Conversation conversation = conversationService.get(uuidConversation);
 			if (conversation == null) throw new AbstractException("Nie znaleziono konwersacji o podanym UUID");
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User user = ((MyUserPrincipal) authentication.getPrincipal()).getUser();
 			conversationService.deleteUserFromConversation(conversation, user);			
-			return "ok";
+			response.body = "Removed";
+			response.code=200;
+			response.message="ok";
 		}catch(Exception e) {
-			response.setStatus(500);
-			return ExceptionHandler.handle(e);
+			r.setStatus(500);
+			response.code=500;
+			response.message = ExceptionHandler.handle(e);
 		}
+		return response;
 	}
 	
-	@PostMapping(value = "/conferences/add", consumes = MediaType.APPLICATION_JSON_VALUE, produces = "text/plain;charset=UTF-8")
-	public String createConversation(@RequestBody ConversationDto conversationDto, HttpServletResponse response) {
+	@PostMapping(value = "/conferences/add", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public Response createConversation(@RequestBody ConversationDto conversationDto, HttpServletResponse r) {
+		Response response = new Response();
 		try {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User user = ((MyUserPrincipal) authentication.getPrincipal()).getUser();
 			Conversation conversation;
 			conversation = conversationService.createConversation(user, conversationDto);
-			return conversation.getUuid();
+			response.body = conversation;
+			response.code=200;
+			response.message="ok";
 		} catch (Exception e) {
-			response.setStatus(500);
-			return ExceptionHandler.handle(e);
+			r.setStatus(500);
+			response.code=500;
+			response.message = ExceptionHandler.handle(e);
 		}
+		return response;
 	}
 	
-	@GetMapping(path = { "/messages/get/{uuidConversation}/{offset}" }, produces = "text/plain;charset=UTF-8")
+	@GetMapping(path = { "/messages/get/{uuidConversation}/{offset}" })
 	public Response getMessages(@PathVariable String uuidConversation, @PathVariable Integer offset) {
 		Response response = new Response();
 		try {

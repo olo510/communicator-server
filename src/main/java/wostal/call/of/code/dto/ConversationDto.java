@@ -10,6 +10,7 @@ public class ConversationDto implements Serializable {
 	private static final long serialVersionUID = -1383658870847908701L;
 	private TreeSet<String> nicks = new TreeSet<String>();
 	private String name;
+	private boolean asConference;
 	
 	public TreeSet<String> getNicks() {
 		return nicks;
@@ -23,6 +24,13 @@ public class ConversationDto implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
+	public boolean isAsConference() {
+		return asConference;
+	}
+	public void setAsConference(boolean asConference) {
+		this.asConference = asConference;
+	}
+	
 	
 	
 }

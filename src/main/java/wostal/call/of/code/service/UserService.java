@@ -37,9 +37,13 @@ public class UserService extends AbstractService<User, UserDaoImpl> {
 		return dao.get(email);
 	}
 	
-	public boolean userExist(String nick, String password) {
+	public User userExist(String nick, String password) {
 		User user = dao.get(nick);
-		return new BCryptPasswordEncoder().matches(password, user.getPassword());
+		if(user==null) return null;
+		if(new BCryptPasswordEncoder().matches(password, user.getPassword())) {
+			return user;
+		}
+		return null;
 	}
 
 	public List<Role> getUserRoles(User user) {

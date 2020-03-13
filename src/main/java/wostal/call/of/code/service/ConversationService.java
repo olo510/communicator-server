@@ -112,6 +112,7 @@ public class ConversationService extends AbstractService<Conversation, Conversat
 	private Conversation createConversation(String uuid, String conversationName, ConversationDto conversationDto) {
 		Conversation conversation = new Conversation();
 		conversation.setUuid(uuid);
+		conversation.setAsConference(conversationDto.isAsConference());
 		if (conversationDto.getName() == null)
 			conversation.setName(conversationName);
 		else {

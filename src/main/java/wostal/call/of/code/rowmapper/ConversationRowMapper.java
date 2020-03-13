@@ -13,6 +13,7 @@ public class ConversationRowMapper implements RowMapper<Conversation> {
 		conversation.setName(rs.getString("name"));
 		conversation.setId(rs.getLong("id"));
 		conversation.setUuid(rs.getString("uuid"));
+		conversation.setAsConference(rs.getBoolean("is_conference"));
 		return conversation;
 	}
 }
