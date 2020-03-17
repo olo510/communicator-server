@@ -110,6 +110,7 @@ public class ConversationService extends AbstractService<Conversation, Conversat
 	}
 	
 	private Conversation createConversation(String uuid, String conversationName, ConversationDto conversationDto) {
+		System.out.println("is conference: " + conversationDto.isAsConference());
 		Conversation conversation = new Conversation();
 		conversation.setUuid(uuid);
 		conversation.setAsConference(conversationDto.isAsConference());
@@ -125,7 +126,7 @@ public class ConversationService extends AbstractService<Conversation, Conversat
 	public void deleteUserFromConversation(Conversation conversation, User user) {
 		dao.deleteUserFromConversation(conversation, user.getId());
 		List<UserWithoutPassword> users = userDao.getConversationUsers(conversation.getId());
-		if(users.size()<3) {
+		if(users.size()<2) {
 			messageDao.delete(conversation);
 			dao.delete(conversation);
 		}

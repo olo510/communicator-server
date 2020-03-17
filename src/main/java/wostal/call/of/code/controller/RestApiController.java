@@ -2,13 +2,12 @@ package wostal.call.of.code.controller;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -83,7 +82,8 @@ public class RestApiController {
 		try{
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User user = ((MyUserPrincipal) authentication.getPrincipal()).getUser();
-			response.body = conversationService.getUserConferences(user); 
+			List<Conversation> conferences =conversationService.getUserConferences(user); 
+			response.body =  conferences;
 			response.code=200;
 			response.message="ok";
 		}catch(Exception e) {
@@ -93,8 +93,49 @@ public class RestApiController {
 		return response;
 	}
 	
-	@PostMapping(value = { "/conferences/users/remove" }, produces = "text/plain;charset=UTF-8")
-	public Response removeUserFromConversation(@RequestBody String uuidConversation, HttpServletResponse r) {
+	@GetMapping("/conversations/get/{uuid}")
+	public Response getConversation(@PathVariable String uuid) {
+		Response response = new Response();
+		try{
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			User user = ((MyUserPrincipal) authentication.getPrincipal()).getUser();
+			Conversation conversation =  conversationService.get(uuid);
+			if(conversation==null) throw new AbstractException("Nie znaleziono konwersacji");
+			List<UserWithoutPassword> users = userService.getConversationUsers(uuid);
+			boolean found = false;
+			for(UserWithoutPassword u : users) {
+				if(user.getId()==u.getId()) {
+					found =true;
+					break;
+				}
+			}
+			if(found) {
+				if (conversation.getName().equals(user.getNick())) {
+					if (users.size() == 2) {
+						if (users.get(0).getNick().equals(user.getNick())) {
+							conversation.setName(users.get(1).getNick());
+						} else {
+							conversation.setName(users.get(0).getNick());
+						}
+					} else {
+						conversation.setName(users.toString());
+					}
+				}
+				response.body = conversation;
+				response.code=200;
+				response.message="ok";
+			}else {
+				throw new AbstractException("Nie jesteœ uczestnikiem danej konwersacji");
+			}			
+		}catch(Exception e) {
+			response.code=500;
+			response.message = ExceptionHandler.handle(e);
+		}
+		return response;
+	}
+	
+	@DeleteMapping(value = { "/conferences/users/remove" })
+	public Response removeUserFromConversation(@RequestBody String uuidConversation) {
 		Response response = new Response();
 		try {
 			Conversation conversation = conversationService.get(uuidConversation);
@@ -106,7 +147,6 @@ public class RestApiController {
 			response.code=200;
 			response.message="ok";
 		}catch(Exception e) {
-			r.setStatus(500);
 			response.code=500;
 			response.message = ExceptionHandler.handle(e);
 		}
@@ -114,7 +154,7 @@ public class RestApiController {
 	}
 	
 	@PostMapping(value = "/conferences/add", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public Response createConversation(@RequestBody ConversationDto conversationDto, HttpServletResponse r) {
+	public Response createConversation(@RequestBody ConversationDto conversationDto) {
 		Response response = new Response();
 		try {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -125,7 +165,6 @@ public class RestApiController {
 			response.code=200;
 			response.message="ok";
 		} catch (Exception e) {
-			r.setStatus(500);
 			response.code=500;
 			response.message = ExceptionHandler.handle(e);
 		}
@@ -150,6 +189,8 @@ public class RestApiController {
 			}
 			if(found) {
 				response.body = messageService.getMessages(offset, 10, conversation.getId());
+				response.code=200;
+				response.message="ok";
 			}else {
 				throw new AbstractException("Nie jesteœ uczestnikiem danej konwersacji");
 			}			
@@ -178,6 +219,8 @@ public class RestApiController {
 			}
 			if(found) {
 				response.body = messageService.search(conversation.getId(), content);
+				response.code=200;
+				response.message="ok";
 			}else {
 				throw new AbstractException("Nie jesteœ uczestnikiem danej konwersacji");
 			}			

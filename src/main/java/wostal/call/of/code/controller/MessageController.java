@@ -59,7 +59,7 @@ public class MessageController {
 		for(UserWithoutPassword u : users) {
 			this.template.convertAndSend("/message/receiv/" + u.getId(), message);
 		}
-		this.template.convertAndSend("/message/receiv/" + conversation.getUuid(), message);
+		//this.template.convertAndSend("/message/receiv/" + conversation.getUuid(), message);
 	}
 	
 	@RequestMapping(path = { "/messages/get/{uuidConversation}/{offset}" })
