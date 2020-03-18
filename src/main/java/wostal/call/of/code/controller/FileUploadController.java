@@ -54,6 +54,8 @@ public class FileUploadController {
 				filename = URLDecoder.decode(filename, "UTF-8");
 			} catch (UnsupportedEncodingException e1) {
 				e1.printStackTrace();
+				response.setStatus(500);
+				return;
 			}
 			Conversation conversation = conversationService.get(uuid);
 			if(conversation!=null) {
@@ -75,6 +77,7 @@ public class FileUploadController {
 					InputStream targetStream;
 					response.reset();
 				    response.setBufferSize((int)file.getTotalSpace());
+				    System.out.println(file.getTotalSpace());
 //				    response.setContentType("image/png");
 					try {
 						targetStream = new FileInputStream(file);
@@ -82,11 +85,24 @@ public class FileUploadController {
 						return;
 					} catch (FileNotFoundException e) {
 						e.printStackTrace();
+						response.setStatus(500);
+						System.out.println("Nie znalezionoi pliku");
 					} catch (IOException e) {
 						e.printStackTrace();
+						response.setStatus(500);
+						System.out.println("B³¹d");
 					}
+				}else {
+					response.setStatus(500);
+					System.out.println("U¿ytkownik nie ma dostêpu do danej konwersacji");
 				}
+			}else {
+				response.setStatus(500);
+				System.out.println("Nie znaleziono konwersacji");
 			}
+		}else {
+			response.setStatus(500);
+			System.out.println("Znaleziono '..' w nazwie pliku");
 		}
 	}
 
@@ -110,7 +126,11 @@ public class FileUploadController {
 				String uploadsDir = File.separator + "uploads" + File.separator + uuid;
 		        String folderName = request.getServletContext().getRealPath(uploadsDir);
 		        if(storageService.store(folderName, file)) {
-		        	return request.getRequestURL().toString().replace("upload/", uuid+"/"+filename);
+		        	String url = request.getRequestURL().toString();
+		        	if(url.substring(url.length() - 1).equals("/")) {
+		        		url = url.substring(0, url.length() - 1);
+		        	}
+		        	return url.replace("upload", uuid+"/"+filename);
 		        }
 			}
 		}
