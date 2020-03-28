@@ -61,8 +61,4 @@ public class WebConfig implements WebMvcConfigurer {
 		registry.addResourceHandler("/resources/**").addResourceLocations("/", "/resources/", "classpath:/resources/");
 	}
 
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(new RequestInterceptor());
-	}
 }
